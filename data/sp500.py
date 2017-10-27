@@ -121,7 +121,7 @@ class SP500():
         pf = util.read_data(symbols, start_date, end_date)
 
         logging.info('Saving Prices to HDF5 file.')
-        filename = '../tmp/' + CONFIGS.PRICES_H5
+        filename = CONFIGS.CURRENT_PATH + '/../tmp/' + CONFIGS.PRICES_H5
         pf.to_hdf(filename, key='prices', mode='w')
 
         df_history = pf.to_frame().reset_index()
