@@ -30,7 +30,7 @@ def bollinger():
 
     end_date = get_last_trading_date()
 
-    pf_price = pd.read_hdf('../tmp/' + CONFIGS.PRICES_H5)
+    pf_price = pd.read_hdf(CONFIGS.CURRENT_PATH + '/../tmp/' + CONFIGS.PRICES_H5)
     df_close = pf_price.Close.tail(21).dropna(axis=1)
 
     assert end_date == df_close.index[-1].date()
