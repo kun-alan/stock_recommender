@@ -2,17 +2,18 @@
     sp500 symbols
 """
 
+import logging
 import urllib.request
 import datetime
 from collections import OrderedDict
 
 from bs4 import BeautifulSoup
 
+from stock_common.lib import util
 from stock_common.conf.config import Config
 from stock_common.lib.database import Database
 
 CONFIGS = Config.get_configs()
-logging = CONFIGS.get_logging()
 db = Database(CONFIGS)
 
 
@@ -101,6 +102,48 @@ class SP500():
             return list(collection.find())
         else:
             symbols = list(collection.find(
-                {'symbol': 1, '_id': 0}
+                {}, {'symbol': 1, '_id': 0}
             ))
             return [item['symbol'] for item in symbols]
+
+    def refresh_historical_prices(self):
+        """
+        Download historical prices of sp500 and store to mongodb
+        """
+
+        symbols = self.get_symbols_from_mongo()
+        if 'SPY' not in symbols:
+            symbols.append('SPY')
+
+        end_date = datetime.date.today()
+        start_date = end_date - datetime.timedelta(days=50)
+
+        pf = util.read_data(symbols, start_date, end_date)
+
+        logging.info('Saving Prices to HDF5 file.')
+        filename = '../tmp/' + CONFIGS.PRICES_H5
+        pf.to_hdf(filename, key='prices', mode='w')
+
+        df_history = pf.to_frame().reset_index()
+        df_history.columns = [
+            'date', 'symbol', 'open', 'high', 'low', 'close', 'volume']
+        df_history.date =\
+            df_history.date.astype(str).str.replace('-', '').astype(int)
+        df_history['_id'] =\
+            df_history.date.astype(str) + ':' + df_history.symbol
+
+        documents = df_history.to_dict('records')
+
+        assert documents
+
+        self.replace_historical_prices_in_mongo(documents)
+
+    @db.connect('MONGO')
+    def replace_historical_prices_in_mongo(self, client, documents):
+        """
+        Replace Historical Prices in MongoDB
+        """
+
+        db = client.stock_recommender
+        db.prices.delete_many({})
+        db.prices.insert_many(documents)
