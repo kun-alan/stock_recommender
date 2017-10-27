@@ -11,7 +11,6 @@ import pandas as pd
 from stock_common.lib import util
 from stock_common.lib.database import Database
 from stock_common.conf.config import Config
-from stock_common.lib.storage import minio_client
 from stock_recommender.data.sp500 import SP500
 
 CONFIGS = Config.get_configs()
