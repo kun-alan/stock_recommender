@@ -24,6 +24,7 @@ def bollinger():
         new = {
             'symbol': result['symbol'],
             'date_to_buy': result['date_to_buy'],
+            'Lookback': result['details']['lookback'],
             'Blg Pre': round(result['details']['equity_bollinger_yesterday'], 2),
             'Blg Now': round(result['details']['equity_bollinger_today'], 2),
             'SPX Blg': round(result['details']['spx_bollinger_today'], 2),
