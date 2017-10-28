@@ -1,3 +1,4 @@
 notebooks/.ipynb_checkpoints/
 .condaauto
 */__pycache__
+__pycache__/
