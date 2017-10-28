@@ -16,7 +16,21 @@ def bollinger():
         processor for bollinger model
     """
 
-    return get_model_results('bollinger')
+    model_results = get_model_results('bollinger')
+
+    new_results = []
+
+    for result in model_results:
+        new = {
+            'symbol': result['symbol'],
+            'date_to_buy': result['date_to_buy'],
+            'Blg Pre': round(result['details']['equity_bollinger_yesterday'], 2),
+            'Blg Now': round(result['details']['equity_bollinger_today'], 2),
+            'SPX Blg': round(result['details']['spx_bollinger_today'], 2),
+        }
+        new_results.append(new)
+
+    return new_results
 
 
 def volatility():
