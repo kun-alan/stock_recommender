@@ -19,6 +19,14 @@ def bollinger():
     return get_model_results('bollinger')
 
 
+def volatility():
+    """
+        processor for volatility model
+    """
+
+    return get_model_results('volatility')
+
+
 @db.connect('MONGO')
 def get_model_results(client, model):
     """
