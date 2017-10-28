@@ -25,7 +25,6 @@ def bollinger():
     df['analyses'] = df.details.apply(_format_dict_to_html)
     del df['details']
 
-    print(df)
     return df
     
 
